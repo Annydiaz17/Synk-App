@@ -1,0 +1,257 @@
+// ==========================================================================
+// Categories Page — Synk App ⚡
+// ==========================================================================
+
+.header-gradient {
+  background: var(--synk-gradient-soft);
+  padding-bottom: 8px;
+
+  ion-toolbar {
+    --background: transparent;
+    --color: #fff;
+  }
+}
+
+.page-title {
+  font-weight: 700;
+  font-size: 20px;
+
+  .title-icon {
+    font-size: 20px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+}
+
+// ── Add Category Card ─────────────────────────────────────────────────
+.add-category-card {
+  margin: 20px 16px 16px;
+  padding: 20px;
+  background: var(--ion-card-background);
+  border-radius: var(--synk-radius);
+  box-shadow: var(--synk-shadow);
+  animation: fadeInUp 0.4s ease both;
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ion-text-color);
+    }
+  }
+
+  .form-row {
+    margin-bottom: 16px;
+  }
+
+  .category-input {
+    --background: var(--ion-background-color);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --border-radius: 12px;
+    font-size: 15px;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--ion-color-primary);
+    }
+  }
+}
+
+// ── Color Picker ────────────────────────────────────────────────────────
+.color-picker {
+  margin-bottom: 20px;
+
+  .color-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ion-color-medium);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+  }
+
+  .color-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    outline: none;
+
+    ion-icon {
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &.selected {
+      border-color: var(--ion-text-color);
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.add-btn {
+  --background: var(--synk-gradient-soft);
+  --color: #fff;
+  font-weight: 600;
+  height: 48px;
+  margin-top: 4px;
+}
+
+// ── Section Title ─────────────────────────────────────────────────────
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px 4px;
+  animation: fadeInUp 0.5s ease both;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+  }
+
+  .count-badge {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+  }
+}
+
+// ── Categories List ───────────────────────────────────────────────────
+.categories-list {
+  padding: 8px 16px;
+}
+
+.category-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ion-card-background);
+  border-radius: var(--synk-radius-sm);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--synk-shadow-sm);
+  animation: fadeInUp 0.4s ease both;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px);
+  }
+
+  .category-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .color-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .category-details {
+    h4 {
+      margin: 0 0 2px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .task-count {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      font-weight: 500;
+    }
+  }
+
+  .delete-btn {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Stagger category cards
+@for $i from 1 through 20 {
+  .category-card:nth-child(#{$i}) {
+    animation-delay: #{0.1 + $i * 0.05}s;
+  }
+}
+
+// ── Empty State ────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  text-align: center;
+  animation: fadeInUp 0.5s ease both;
+
+  ion-icon {
+    font-size: 72px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--ion-color-medium);
+    max-width: 260px;
+  }
+}

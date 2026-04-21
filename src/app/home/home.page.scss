@@ -1,27 +1,394 @@
-#container {
+// ==========================================================================
+// Home Page -- Synk App
+// ==========================================================================
+
+// ── Header Gradient ───────────────────────────────────────────────────
+.header-gradient {
+  background: var(--synk-gradient-soft);
+  padding-bottom: 16px;
+  border-radius: 0 0 24px 24px;
+
+  ion-toolbar {
+    --background: transparent;
+    --color: #fff;
+  }
+}
+
+.app-logo-img {
+  height: 28px;
+  width: auto;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.app-flash-icon {
+  font-size: 18px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.app-title {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.active-btn {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #FACC15;
+  }
+}
+
+// ── Stats Bar ─────────────────────────────────────────────────────────
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 20px 4px;
+  animation: fadeInUp 0.4s ease both;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    .stat-number {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .progress-stat {
+    .progress-ring {
+      position: relative;
+      width: 48px;
+      height: 48px;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+
+      .progress-bg {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.2);
+        stroke-width: 3;
+      }
+
+      .progress-fill {
+        fill: none;
+        stroke: #FACC15;
+        stroke-width: 3;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.6s ease;
+      }
+
+      .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+      }
+    }
+  }
+}
+
+// ── Category Filter ───────────────────────────────────────────────────
+.category-filter {
+  display: flex;
+  overflow-x: auto;
+  padding: 16px 16px 8px;
+  gap: 8px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ion-chip {
+    flex-shrink: 0;
+    --background: var(--ion-card-background);
+    --color: var(--ion-text-color);
+    height: 36px;
+    font-size: 13px;
+
+    .chip-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ── Add Task Section ──────────────────────────────────────────────────
+.add-task-section {
+  margin: 8px 16px 12px;
+  background: var(--ion-card-background);
+  border-radius: var(--synk-radius);
+  box-shadow: var(--synk-shadow-sm);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease both;
+  animation-delay: 0.1s;
+
+  .add-task-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ion-text-color);
+    font-family: 'Inter', sans-serif;
+
+    ion-icon {
+      font-size: 24px;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .add-task-form {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0 20px;
+
+    &.visible {
+      max-height: 300px;
+      opacity: 1;
+      padding: 0 20px 20px;
+    }
+  }
+
+  .task-input {
+    --background: var(--ion-background-color);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    --border-radius: 12px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--ion-color-primary);
+    }
+  }
+
+  .form-selects {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+
+    .select-field {
+      flex: 1;
+      --background: var(--ion-background-color);
+      --padding-start: 16px;
+      --padding-end: 8px;
+      --padding-top: 10px;
+      --padding-bottom: 10px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+  }
+
+  .submit-btn {
+    --background: var(--synk-gradient-soft);
+    --color: #fff;
+    font-weight: 600;
+    height: 46px;
+  }
+}
+
+// ── Reorder Indicator ─────────────────────────────────────────────────
+.reorder-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 4px 16px 8px;
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #B59300;
+  animation: fadeInUp 0.3s ease both;
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .reorder-indicator {
+    color: #FACC15;
+  }
+}
+
+// ── Task Items ────────────────────────────────────────────────────────
+.task-item {
+  --background: var(--ion-card-background);
+  --min-height: 68px;
+  margin: 6px 16px;
+  border-radius: var(--synk-radius-sm) !important;
+  box-shadow: var(--synk-shadow-sm);
+  transition: all 0.3s ease;
+
+  &.task-completed {
+    opacity: 0.6;
+
+    .task-title {
+      text-decoration: line-through;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .task-checkbox {
+    --size: 22px;
+    --border-radius: 6px;
+    --border-color: var(--ion-color-medium);
+    --background-checked: var(--ion-color-primary);
+    --border-color-checked: var(--ion-color-primary);
+    --checkmark-color: #fff;
+    margin-right: 12px;
+  }
+
+  ion-label {
+    .task-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+      margin-bottom: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// ── Category Badge ────────────────────────────────────────────────────
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+// -- Priority Badge (ion-badge) -------------------------------------------
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 2px;
+  --padding-bottom: 2px;
+
+  ion-icon {
+    font-size: 12px;
+  }
+}
+
+
+
+// ── Slide Delete ──────────────────────────────────────────────────────
+ion-item-option[color="danger"] {
+  --border-radius: 12px;
+  margin: 6px 4px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+// ── Empty State ───────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
   text-align: center;
+  animation: fadeInUp 0.5s ease both;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--synk-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    animation: pulse 2s ease infinite;
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
+    ion-icon {
+      font-size: 40px;
+      color: #fff;
+    }
+  }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+  h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+  }
 
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    max-width: 240px;
+  }
 }

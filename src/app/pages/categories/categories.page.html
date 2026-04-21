@@ -1,0 +1,94 @@
+<ion-header class="ion-no-border">
+  <div class="header-gradient">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/home" text="" color="light"></ion-back-button>
+      </ion-buttons>
+      <ion-title color="light">
+        <span class="page-title"><ion-icon name="color-palette" class="title-icon"></ion-icon> Categorías</span>
+      </ion-title>
+    </ion-toolbar>
+  </div>
+</ion-header>
+
+<ion-content>
+  <!-- Add Category Card -->
+  <div class="add-category-card">
+    <div class="card-header">
+      <ion-icon name="add-circle" color="primary"></ion-icon>
+      <h3>Nueva categoría</h3>
+    </div>
+
+    <div class="form-row">
+      <ion-input
+        [(ngModel)]="newCategoryName"
+        placeholder="Nombre de la categoría"
+        class="category-input"
+        (keyup.enter)="addCategory()"
+        maxlength="30">
+      </ion-input>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="color-picker">
+      <p class="color-label">Elige un color</p>
+      <div class="color-grid">
+        <button
+          *ngFor="let color of presetColors"
+          class="color-dot"
+          [style.background]="color"
+          [class.selected]="selectedColor === color"
+          (click)="selectColor(color)"
+          type="button">
+          <ion-icon name="checkmark" *ngIf="selectedColor === color"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <ion-button
+      expand="block"
+      shape="round"
+      (click)="addCategory()"
+      [disabled]="!newCategoryName.trim()"
+      class="add-btn">
+      <ion-icon slot="start" name="add"></ion-icon>
+      Crear categoría
+    </ion-button>
+  </div>
+
+  <!-- Categories List -->
+  <div class="section-title">
+    <h3>Tus categorías</h3>
+    <span class="count-badge">{{ categories.length }}</span>
+  </div>
+
+  <div class="categories-list">
+    <div
+      *ngFor="let cat of categories; trackBy: trackById"
+      class="category-card">
+      <div class="category-info">
+        <div class="color-swatch" [style.background]="cat.color"></div>
+        <div class="category-details">
+          <h4>{{ cat.name }}</h4>
+          <p class="task-count">
+            {{ getTaskCount(cat.id) }} tarea{{ getTaskCount(cat.id) !== 1 ? 's' : '' }}
+          </p>
+        </div>
+      </div>
+      <ion-button
+        fill="clear"
+        color="danger"
+        (click)="confirmDelete(cat)"
+        class="delete-btn">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="categories.length === 0" class="empty-state">
+    <ion-icon name="folder-open-outline"></ion-icon>
+    <h3>Sin categorías</h3>
+    <p>Crea tu primera categoría para organizar tus tareas</p>
+  </div>
+</ion-content>

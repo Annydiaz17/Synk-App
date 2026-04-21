@@ -1,12 +1,6 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Synk App ⚡ — Global Styles
+ * --------------------------------------------------------------------------
  */
 
 /* Core CSS required for Ionic components to work properly */
@@ -18,20 +12,154 @@
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
+/* Optional CSS utils */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+/* Dark Mode (system) */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+// ==========================================================================
+// Global Typography
+// ==========================================================================
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ==========================================================================
+// Ion Components Global Overrides
+// ==========================================================================
+
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+ion-toolbar {
+  --border-width: 0;
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+ion-card {
+  border-radius: var(--synk-radius);
+  box-shadow: var(--synk-shadow-sm);
+  margin: 12px 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+ion-item {
+  --border-radius: var(--synk-radius-sm);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 8px;
+  transition: transform 0.2s ease;
+}
+
+ion-chip {
+  --border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+ion-chip:hover {
+  transform: translateY(-1px);
+}
+
+ion-button {
+  --border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  transition: all 0.2s ease;
+}
+
+ion-button:hover {
+  transform: translateY(-1px);
+}
+
+// ==========================================================================
+// Animations
+// ==========================================================================
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+// ==========================================================================
+// Utility Classes
+// ==========================================================================
+.gradient-text {
+  background: var(--synk-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-effect {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+// ==========================================================================
+// Reorder animation
+// ==========================================================================
+ion-reorder {
+  --ion-color-base: var(--ion-color-medium);
+}
+
+ion-item-sliding {
+  animation: fadeInUp 0.3s ease both;
+}
+
+// Stagger animation for list items
+@for $i from 1 through 20 {
+  ion-item-sliding:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.04}s;
+  }
+}
