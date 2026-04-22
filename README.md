@@ -5,11 +5,11 @@ Aplicacion moderna de lista de tareas (To-Do List) desarrollada con **Ionic 8 + 
 ## 🚀 Entregables de la Prueba Técnica
 
 - 📦 **APK Compilado:** [Descargar app-debug.apk desde Google Drive](https://drive.google.com/file/d/1ADnUqwaEuEwp5RPe-i0QdpRq0OuLy12h/view?usp=sharing).
+  - > **Nota sobre iOS (.ipa):** El proyecto está completamente configurado a nivel de código y estructura para ser compilado en iOS mediante Cordova (`ionic cordova platform add ios`). Sin embargo, debido a limitaciones de hardware (ausencia de un entorno macOS con Xcode) y la necesidad de una cuenta de Apple Developer de pago  para firmar y exportar el binario, no fue posible adjuntar el archivo `.ipa` final. El archivo `.apk` adjunto demuestra la funcionalidad multiplataforma completa.
 - 🎥 **Video Demostrativo:** [Ver Video en Google Drive](https://drive.google.com/file/d/1j7_3Cx3O1odD03bR4mfFPqLCigXca_c-/view?usp=sharing).
 
 ### 📸 Capturas de Pantalla
 
-*(Reemplaza las rutas de abajo por tus imágenes reales si decides subirlas al repo, o bórralas si envías las fotos adjuntas en el correo)*
 
 <p align="center">
   <img src="./docs/image0.jpeg" alt="Pantalla Principal" width="250"/>
