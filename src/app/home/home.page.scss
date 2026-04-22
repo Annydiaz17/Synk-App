@@ -14,13 +14,20 @@
   }
 }
 
-.app-logo-img {
-  height: 28px;
-  width: auto;
-  margin-right: 6px;
-  vertical-align: middle;
-  border-radius: 4px;
-  object-fit: contain;
+.logo-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0 8px;
+  animation: fadeInUp 0.4s ease both;
+
+  .header-logo {
+    height: 56px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.95;
+  }
 }
 
 .app-flash-icon {
@@ -261,7 +268,7 @@
   }
 }
 
-// ── Task Items ────────────────────────────────────────────────────────
+// -- Task Items ---------------------------------------------------------------
 .task-item {
   --background: var(--ion-card-background);
   --min-height: 68px;
@@ -269,6 +276,17 @@
   border-radius: var(--synk-radius-sm) !important;
   box-shadow: var(--synk-shadow-sm);
   transition: all 0.3s ease;
+  cursor: pointer;
+
+  .edit-icon {
+    font-size: 18px;
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .edit-icon {
+    opacity: 0.8;
+  }
 
   &.task-completed {
     opacity: 0.6;

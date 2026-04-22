@@ -1,5 +1,5 @@
 // ==========================================================================
-// Categories Page — Synk App ⚡
+// Categories Page -- Synk App
 // ==========================================================================
 
 .header-gradient {
@@ -205,6 +205,13 @@
     }
   }
 
+  .card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .edit-btn,
   .delete-btn {
     --padding-start: 8px;
     --padding-end: 8px;

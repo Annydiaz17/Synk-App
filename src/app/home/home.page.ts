@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { Task, Category, Priority } from '../models/task.model';
 import { TaskService } from '../services/task.service';
 import { FirebaseService } from '../services/firebase.service';
@@ -54,6 +54,7 @@ export class HomePage implements OnInit, OnDestroy {
     private firebaseService: FirebaseService,
     private cdr: ChangeDetectorRef,
     private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
   ) {}
 
   ngOnInit(): void {
@@ -117,6 +118,116 @@ export class HomePage implements OnInit, OnDestroy {
   deleteTask(taskId: string): void {
     this.taskService.deleteTask(taskId);
     this.showToast('Tarea eliminada');
+  }
+
+  async editTask(task: Task): Promise<void> {
+    const categoryInputs = this.categories.map(cat => ({
+      name: 'category',
+      type: 'radio' as const,
+      label: cat.name,
+      value: cat.id,
+      checked: cat.id === task.categoryId,
+    }));
+
+    const alert = await this.alertCtrl.create({
+      header: 'Editar tarea',
+      cssClass: 'edit-task-alert',
+      inputs: [
+        {
+          name: 'title',
+          type: 'text',
+          placeholder: 'Titulo de la tarea',
+          value: task.title,
+          attributes: { maxlength: 100 },
+        },
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Siguiente',
+          handler: (data) => {
+            const newTitle = data.title?.trim();
+            if (!newTitle) {
+              this.showToast('El titulo no puede estar vacio');
+              return false;
+            }
+            // Show category picker
+            this.showCategoryPicker(task, newTitle);
+            return true;
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  private async showCategoryPicker(task: Task, newTitle: string): Promise<void> {
+    const categoryInputs = this.categories.map(cat => ({
+      name: 'category',
+      type: 'radio' as const,
+      label: cat.name,
+      value: cat.id,
+      checked: cat.id === task.categoryId,
+    }));
+
+    const alert = await this.alertCtrl.create({
+      header: 'Seleccionar categoria',
+      inputs: categoryInputs,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: this.showPriority ? 'Siguiente' : 'Guardar',
+          handler: (selectedCategoryId: string) => {
+            if (this.showPriority) {
+              this.showPriorityPicker(task, newTitle, selectedCategoryId);
+            } else {
+              this.taskService.updateTask(task.id, {
+                title: newTitle,
+                categoryId: selectedCategoryId,
+              });
+              this.showToast('Tarea actualizada');
+              this.cdr.markForCheck();
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  private async showPriorityPicker(task: Task, newTitle: string, categoryId: string): Promise<void> {
+    const priorities: { label: string; value: Priority }[] = [
+      { label: 'Alta', value: 'alta' },
+      { label: 'Media', value: 'media' },
+      { label: 'Baja', value: 'baja' },
+    ];
+
+    const alert = await this.alertCtrl.create({
+      header: 'Seleccionar prioridad',
+      inputs: priorities.map(p => ({
+        name: 'priority',
+        type: 'radio' as const,
+        label: p.label,
+        value: p.value,
+        checked: p.value === (task.priority || 'media'),
+      })),
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: (selectedPriority: Priority) => {
+            this.taskService.updateTask(task.id, {
+              title: newTitle,
+              categoryId,
+              priority: selectedPriority,
+            });
+            this.showToast('Tarea actualizada');
+            this.cdr.markForCheck();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   // ── Filtering ───────────────────────────────────────────────────────

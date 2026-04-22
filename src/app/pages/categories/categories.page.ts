@@ -102,6 +102,39 @@ export class CategoriesPage implements OnInit, OnDestroy {
     return this.taskService.getTaskCountByCategory(categoryId);
   }
 
+  /** Edit an existing category */
+  async editCategory(category: Category): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Editar categoria',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre de la categoria',
+          value: category.name,
+          attributes: { maxlength: 30 },
+        },
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: (data) => {
+            const newName = data.name?.trim();
+            if (!newName) {
+              this.showToast('El nombre no puede estar vacio');
+              return false;
+            }
+            this.taskService.updateCategory(category.id, { name: newName });
+            this.showToast('Categoria actualizada');
+            return true;
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
   /** Show a toast notification */
   private async showToast(message: string): Promise<void> {
     const toast = await this.toastCtrl.create({

@@ -75,13 +75,22 @@
           </p>
         </div>
       </div>
-      <ion-button
-        fill="clear"
-        color="danger"
-        (click)="confirmDelete(cat)"
-        class="delete-btn">
-        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-      </ion-button>
+      <div class="card-actions">
+        <ion-button
+          fill="clear"
+          color="primary"
+          (click)="editCategory(cat)"
+          class="edit-btn">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button
+          fill="clear"
+          color="danger"
+          (click)="confirmDelete(cat)"
+          class="delete-btn">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </div>
     </div>
   </div>
 

@@ -61,6 +61,15 @@ export class TaskService {
     this.persistTasks(tasks);
   }
 
+  /** Update an existing task */
+  updateTask(taskId: string, updates: Partial<Pick<Task, 'title' | 'categoryId' | 'priority'>>): void {
+    const tasks = this.tasksSubject.getValue().map(t =>
+      t.id === taskId ? { ...t, ...updates } : t
+    );
+    this.tasksSubject.next(tasks);
+    this.persistTasks(tasks);
+  }
+
   /** Save the full tasks array (used after reorder) */
   saveTasks(tasks: Task[]): void {
     this.tasksSubject.next(tasks);
@@ -90,6 +99,15 @@ export class TaskService {
   /** Delete a category by ID */
   deleteCategory(categoryId: string): void {
     const categories = this.categoriesSubject.getValue().filter(c => c.id !== categoryId);
+    this.categoriesSubject.next(categories);
+    this.persistCategories(categories);
+  }
+
+  /** Update an existing category */
+  updateCategory(categoryId: string, updates: Partial<Pick<Category, 'name' | 'color'>>): void {
+    const categories = this.categoriesSubject.getValue().map(c =>
+      c.id === categoryId ? { ...c, ...updates } : c
+    );
     this.categoriesSubject.next(categories);
     this.persistCategories(categories);
   }
