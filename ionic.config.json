@@ -1,7 +1,7 @@
 {
   "name": "Synk-app",
   "integrations": {
-    "capacitor": {}
+    "cordova": {}
   },
   "type": "angular"
 }

@@ -2,6 +2,29 @@
 
 Aplicacion moderna de lista de tareas (To-Do List) desarrollada con **Ionic 8 + Angular 20**.
 
+## 🚀 Entregables de la Prueba Técnica
+
+- 📦 **APK Compilado:** [Descargar app-debug.apk desde Google Drive](https://drive.google.com/file/d/1ADnUqwaEuEwp5RPe-i0QdpRq0OuLy12h/view?usp=sharing).
+- 🎥 **Video Demostrativo:** [Ver Video en Google Drive](https://drive.google.com/file/d/1j7_3Cx3O1odD03bR4mfFPqLCigXca_c-/view?usp=sharing).
+
+### 📸 Capturas de Pantalla
+
+*(Reemplaza las rutas de abajo por tus imágenes reales si decides subirlas al repo, o bórralas si envías las fotos adjuntas en el correo)*
+
+<p align="center">
+  <img src="./docs/image0.jpeg" alt="Pantalla Principal" width="250"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="./docs/image1.jpeg" alt="Filtros y Categorías" width="250"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="./docs/image2.jpeg" alt="Firebase Config" width="250"/>
+  <br/><br/>
+  <img src="./docs/image3.jpeg" alt="Detalle" width="250"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="./docs/image4.jpeg" alt="Opciones" width="250"/>
+</p>
+
+---
+
 ## Caracteristicas
 
 - **Gestion de Tareas:** Crear, completar (tachado), eliminar con swipe y reordenar con drag & drop
@@ -79,25 +102,20 @@ La app estara disponible en `http://localhost:8100`
 # 1. Compilar la app para produccion
 ionic build --prod
 
-# 2. Agregar plataforma Android (solo la primera vez)
-npm install @capacitor/android
-npx cap add android
+# 2. Agregar plataforma Android
+ionic cordova platform add android
 
-# 3. Sincronizar archivos web
-npx cap sync android
-
-# 4. Abrir en Android Studio
-npx cap open android
+# 3. Construir la app
+ionic cordova build android
 ```
 
 ### Generar APK desde terminal
 
 ```bash
-cd android
+cd platforms/android
 .\gradlew.bat assembleDebug
-```
 
-El APK se genera en: `android/app/build/outputs/apk/debug/app-debug.apk`
+El APK se genera en: `platforms/android/app/build/outputs/apk/debug/app-debug.apk`
 
 ### Generar APK firmado (release)
 
@@ -109,16 +127,14 @@ En Android Studio: **Build > Generate Signed Bundle / APK > APK**
 # 1. Compilar
 ionic build --prod
 
-# 2. Agregar plataforma iOS (solo la primera vez)
-npm install @capacitor/ios
-npx cap add ios
+# 2. Agregar plataforma iOS
+ionic cordova platform add ios
 
-# 3. Sincronizar
-npx cap sync ios
+# 3. Construir
+ionic cordova build ios
 
 # 4. Abrir en Xcode
-npx cap open ios
-```
+open platforms/ios/SynkApp.xcworkspace```
 
 En Xcode: seleccionar dispositivo/simulador y presionar **Run** o archivar para generar IPA.
 
@@ -160,22 +176,24 @@ src/
 - **trackBy** en todas las directivas `*ngFor`
 - **Firebase JS SDK** directo (sin AngularFire) para compatibilidad con Angular 20
 
-## Preguntas Tecnicas
+### 1. ¿Cuáles fueron los principales desafíos que enfrentaste al implementar las nuevas funcionalidades?
 
-### 1. Como se implemento el almacenamiento persistente?
+El principal desafío fue mantener el estado sincronizado en tiempo real entre la gestión de tareas y el conteo de las categorías sin afectar el rendimiento. Al tener dos entidades relacionadas (Tareas y Categorías), fue crucial diseñar un servicio (`TaskService`) que utilizara `BehaviorSubject` para emitir el estado reactivo, asegurando que cuando una tarea se agrega, elimina o cambia de categoría, el contador en la vista de categorías se actualice instantáneamente en toda la aplicación sin necesidad de recargar la página. Además, asegurar la compatibilidad de Firebase Remote Config con Angular 20 requirió utilizar el SDK de Firebase en su versión más reciente y modular.
 
-Se utiliza `localStorage` del navegador a traves del `TaskService`. Las tareas y categorias se serializan como JSON y se guardan en claves separadas (`synk_tasks` y `synk_categories`). Cada operacion CRUD (agregar, eliminar, toggle, reordenar) actualiza automaticamente el localStorage y emite el nuevo estado via `BehaviorSubject`, manteniendo la UI sincronizada de forma reactiva.
+### 2. ¿Qué técnicas de optimización de rendimiento aplicaste y por qué?
 
-### 2. Como funciona el feature flag de Firebase Remote Config?
+Para asegurar una experiencia fluida y escalable, apliqué:
+- **OnPush Change Detection:** Evita que Angular revise todo el árbol de componentes constantemente, renderizando solo cuando los `@Input()` cambian explícitamente.
+- **trackBy en *ngFor:** Crucial para listas largas de tareas. Evita que el DOM se destruya y vuelva a crear al ordenar o modificar elementos.
+- **Lazy Loading:** Los módulos de `home` y `categories` se cargan bajo demanda, minimizando el tiempo de carga inicial de la aplicación.
+- **RxJS (BehaviorSubject):** Minimiza el uso de memoria al mantener una única fuente de verdad (Single Source of Truth) para el estado, evitando llamadas redundantes al `localStorage`.
 
-El `FirebaseService` inicializa el SDK de Firebase al arrancar la app. Hace fetch de Remote Config y lee el parametro `show_priority_feature`. Si es `true`, se muestra el campo de prioridad (Alta/Media/Baja) al crear tareas y los badges de prioridad en cada tarea. Si Firebase no esta disponible o no esta configurado, el servicio hace fallback a `false` sin romper la app.
+### 3. ¿Cómo aseguraste la calidad y mantenibilidad del código?
 
-### 3. Que estrategias de optimizacion se aplicaron?
-
-- **OnPush Change Detection:** Los componentes solo se re-renderizan cuando cambian sus inputs o se llama `markForCheck()`, reduciendo ciclos innecesarios de deteccion de cambios.
-- **trackBy en ngFor:** Evita re-crear elementos del DOM al actualizar listas, mejorando el rendimiento al agregar/eliminar tareas.
-- **Lazy Loading:** Las paginas se cargan bajo demanda (loadChildren), reduciendo el bundle inicial.
-- **BehaviorSubject:** Permite notificacion reactiva de cambios sin polling ni deteccion manual.
+Aseguré la mantenibilidad aplicando principios de **Clean Architecture** a nivel de frontend:
+- **Separación de responsabilidades (SoC):** Los componentes (archivos `.ts`) no tienen lógica de negocio ni acceden directamente al `localStorage`. Toda esa responsabilidad se delegó a Servicios (`task.service.ts` y `firebase.service.ts`).
+- **Tipado estricto:** Se crearon interfaces claras en `task.model.ts` para asegurar que las estructuras de datos (Task, Category) sean predecibles, aprovechando todo el potencial de TypeScript 5.
+- **Modularidad:** El uso de variables SCSS globales en `theme/variables.scss` permite cambiar toda la paleta de colores de la aplicación desde un solo archivo, facilitando futuras iteraciones de diseño o temas oscuros.
 
 ## Licencia
 
