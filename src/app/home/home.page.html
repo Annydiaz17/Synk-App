@@ -3,22 +3,16 @@
     <ion-toolbar>
       <ion-title color="light">
         <span class="app-title">Synk App</span>
-        <ion-icon name="flash" color="warning" class="app-flash-icon"></ion-icon>
       </ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="toggleReorder()" [class.active-btn]="reorderMode">
           <ion-icon slot="icon-only" name="reorder-three-outline" color="light"></ion-icon>
         </ion-button>
-        <ion-button routerLink="/categories">
-          <ion-icon slot="icon-only" name="grid-outline" color="light"></ion-icon>
+        <ion-button routerLink="/categories" class="brand-btn">
+          <ion-icon slot="icon-only" name="layers" style="color: #00D4C8; font-size: 26px;"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
-
-    <!-- Logo Brand -->
-    <div class="logo-brand">
-      <img src="assets/logo.png" alt="Synk App" class="header-logo" />
-    </div>
 
     <!-- Stats Bar -->
     <div class="stats-bar">
@@ -81,16 +75,25 @@
     <div class="add-task-form" [class.visible]="showAddForm">
       <ion-input
         [(ngModel)]="newTaskTitle"
-        placeholder="¿Qué necesitas hacer?"
+        placeholder="Que necesitas hacer?"
         class="task-input"
         (keyup.enter)="addTask()"
         maxlength="100">
       </ion-input>
 
+      <ion-textarea
+        [(ngModel)]="newTaskDescription"
+        placeholder="Descripcion (opcional)"
+        class="task-input task-textarea"
+        [autoGrow]="true"
+        maxlength="300"
+        rows="1">
+      </ion-textarea>
+
       <div class="form-selects">
         <ion-select
           [(ngModel)]="newTaskCategory"
-          placeholder="Categoría"
+          placeholder="Categoria"
           interface="popover"
           class="select-field">
           <ion-select-option
@@ -118,7 +121,7 @@
         (click)="addTask()"
         [disabled]="!newTaskTitle.trim() || !newTaskCategory"
         class="submit-btn">
-        <ion-icon slot="start" name="flash"></ion-icon>
+        <ion-icon slot="start" name="add-circle"></ion-icon>
         Agregar tarea
       </ion-button>
     </div>
@@ -127,7 +130,7 @@
   <!-- Reorder Mode Indicator -->
   <div *ngIf="reorderMode" class="reorder-indicator">
     <ion-icon name="move-outline"></ion-icon>
-    <span>Modo reordenamiento activo — arrastra para reordenar</span>
+    <span>Modo reordenamiento activo -- arrastra para reordenar</span>
   </div>
 
   <!-- Task List -->
@@ -151,6 +154,7 @@
         </ion-checkbox>
         <ion-label [class.task-done]="task.completed">
           <h2 class="task-title">{{ task.title }}</h2>
+          <p class="task-desc" *ngIf="task.description">{{ task.description }}</p>
           <div class="task-meta">
             <span class="category-badge" [style.background]="getCategoryColor(task.categoryId)">
               {{ getCategoryName(task.categoryId) }}
@@ -181,9 +185,103 @@
     <div class="empty-icon">
       <ion-icon name="checkmark-circle-outline"></ion-icon>
     </div>
-    <h3>{{ selectedCategory === 'all' ? '¡Sin tareas pendientes!' : '¡Categoría vacía!' }}</h3>
+    <h3>{{ selectedCategory === 'all' ? 'Sin tareas pendientes!' : 'Categoria vacia!' }}</h3>
     <p>{{ selectedCategory === 'all'
-      ? 'Toca el botón + para agregar tu primera tarea'
-      : 'No hay tareas en esta categoría' }}</p>
+      ? 'Toca el boton + para agregar tu primera tarea'
+      : 'No hay tareas en esta categoria' }}</p>
   </div>
+
+  <!-- ═══════════ EDIT TASK MODAL ═══════════ -->
+  <div class="edit-modal-overlay" *ngIf="editingTask" (click)="cancelEdit()">
+    <div class="edit-modal" (click)="$event.stopPropagation()" [@slideUp]>
+      <!-- Modal Header -->
+      <div class="edit-modal-header">
+        <ion-icon name="create"></ion-icon>
+        <span>Editar tarea</span>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="edit-modal-body">
+        <!-- Title Input -->
+        <div class="edit-field">
+          <label class="edit-label">Titulo</label>
+          <input
+            type="text"
+            class="edit-input"
+            [(ngModel)]="editTitle"
+            placeholder="Titulo de la tarea"
+            maxlength="100" />
+        </div>
+
+        <!-- Description Input -->
+        <div class="edit-field">
+          <label class="edit-label">Descripcion (Opcional)</label>
+          <textarea
+            class="edit-input edit-textarea"
+            [(ngModel)]="editDescription"
+            placeholder="Agrega mas detalles..."
+            rows="2"
+            maxlength="300"></textarea>
+        </div>
+
+        <!-- Category Chips -->
+        <div class="edit-field">
+          <label class="edit-label">Categoria</label>
+          <div class="edit-chips">
+            <button
+              *ngFor="let cat of categories; trackBy: trackById"
+              class="edit-chip"
+              [class.active]="editCategoryId === cat.id"
+              [style.--chip-color]="cat.color"
+              (click)="editCategoryId = cat.id"
+              type="button">
+              <span class="edit-chip-dot" [style.background]="cat.color"></span>
+              {{ cat.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Priority Buttons -->
+        <div class="edit-field" *ngIf="showPriority">
+          <label class="edit-label">Prioridad</label>
+          <div class="priority-selector">
+            <button
+              class="priority-btn priority-alta"
+              [class.active]="editPriority === 'alta'"
+              (click)="editPriority = 'alta'"
+              type="button">
+              <ion-icon name="alert-circle"></ion-icon>
+              Alta
+            </button>
+            <button
+              class="priority-btn priority-media"
+              [class.active]="editPriority === 'media'"
+              (click)="editPriority = 'media'"
+              type="button">
+              <ion-icon name="remove-circle"></ion-icon>
+              Media
+            </button>
+            <button
+              class="priority-btn priority-baja"
+              [class.active]="editPriority === 'baja'"
+              (click)="editPriority = 'baja'"
+              type="button">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              Baja
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="edit-modal-actions">
+        <button class="edit-btn-cancel" (click)="cancelEdit()" type="button">Cancelar</button>
+        <button class="edit-btn-save" (click)="saveEdit()" type="button">
+          <ion-icon name="checkmark"></ion-icon>
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+
 </ion-content>

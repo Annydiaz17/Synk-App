@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { AlertController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Task, Category, Priority } from '../models/task.model';
 import { TaskService } from '../services/task.service';
 import { FirebaseService } from '../services/firebase.service';
@@ -19,7 +19,7 @@ import { FirebaseService } from '../services/firebase.service';
   standalone: false,
 })
 export class HomePage implements OnInit, OnDestroy {
-  // ── State ───────────────────────────────────────────────────────────
+  // -- State --
   tasks: Task[] = [];
   categories: Category[] = [];
   filteredTasks: Task[] = [];
@@ -28,12 +28,20 @@ export class HomePage implements OnInit, OnDestroy {
   showPriority = false;
   showAddForm = false;
 
-  // ── Form ────────────────────────────────────────────────────────────
+  // -- Form --
   newTaskTitle = '';
+  newTaskDescription = '';
   newTaskCategory = '';
   newTaskPriority: Priority = 'media';
 
-  // ── Stats ───────────────────────────────────────────────────────────
+  // -- Edit Modal --
+  editingTask: Task | null = null;
+  editTitle = '';
+  editDescription = '';
+  editCategoryId = '';
+  editPriority: Priority = 'media';
+
+  // -- Stats --
   get completedCount(): number {
     return this.tasks.filter(t => t.completed).length;
   }
@@ -54,7 +62,6 @@ export class HomePage implements OnInit, OnDestroy {
     private firebaseService: FirebaseService,
     private cdr: ChangeDetectorRef,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController,
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +79,6 @@ export class HomePage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(cats => {
         this.categories = cats;
-        // Auto-select first category for new tasks
         if (!this.newTaskCategory && cats.length > 0) {
           this.newTaskCategory = cats[0].id;
         }
@@ -93,20 +99,21 @@ export class HomePage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ── Track Functions ─────────────────────────────────────────────────
+  // -- Track Functions --
 
   trackById(_index: number, item: Task | Category): string {
     return item.id;
   }
 
-  // ── Task Actions ────────────────────────────────────────────────────
+  // -- Task Actions --
 
   addTask(): void {
     const title = this.newTaskTitle.trim();
     if (!title || !this.newTaskCategory) { return; }
 
-    this.taskService.addTask(title, this.newTaskCategory, this.newTaskPriority);
+    this.taskService.addTask(title, this.newTaskCategory, this.newTaskPriority, this.newTaskDescription);
     this.newTaskTitle = '';
+    this.newTaskDescription = '';
     this.newTaskPriority = 'media';
     this.showToast('Tarea agregada correctamente');
   }
@@ -120,122 +127,46 @@ export class HomePage implements OnInit, OnDestroy {
     this.showToast('Tarea eliminada');
   }
 
-  async editTask(task: Task): Promise<void> {
-    const categoryInputs = this.categories.map(cat => ({
-      name: 'category',
-      type: 'radio' as const,
-      label: cat.name,
-      value: cat.id,
-      checked: cat.id === task.categoryId,
-    }));
+  // -- Edit Modal --
 
-    const alert = await this.alertCtrl.create({
-      header: 'Editar tarea',
-      cssClass: 'edit-task-alert',
-      inputs: [
-        {
-          name: 'title',
-          type: 'text',
-          placeholder: 'Titulo de la tarea',
-          value: task.title,
-          attributes: { maxlength: 100 },
-        },
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Siguiente',
-          handler: (data) => {
-            const newTitle = data.title?.trim();
-            if (!newTitle) {
-              this.showToast('El titulo no puede estar vacio');
-              return false;
-            }
-            // Show category picker
-            this.showCategoryPicker(task, newTitle);
-            return true;
-          },
-        },
-      ],
-    });
-    await alert.present();
+  editTask(task: Task): void {
+    this.editingTask = task;
+    this.editTitle = task.title;
+    this.editDescription = task.description || '';
+    this.editCategoryId = task.categoryId;
+    this.editPriority = task.priority || 'media';
+    this.cdr.markForCheck();
   }
 
-  private async showCategoryPicker(task: Task, newTitle: string): Promise<void> {
-    const categoryInputs = this.categories.map(cat => ({
-      name: 'category',
-      type: 'radio' as const,
-      label: cat.name,
-      value: cat.id,
-      checked: cat.id === task.categoryId,
-    }));
+  saveEdit(): void {
+    if (!this.editingTask) { return; }
+    const title = this.editTitle.trim();
+    if (!title) {
+      this.showToast('El titulo no puede estar vacio');
+      return;
+    }
 
-    const alert = await this.alertCtrl.create({
-      header: 'Seleccionar categoria',
-      inputs: categoryInputs,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: this.showPriority ? 'Siguiente' : 'Guardar',
-          handler: (selectedCategoryId: string) => {
-            if (this.showPriority) {
-              this.showPriorityPicker(task, newTitle, selectedCategoryId);
-            } else {
-              this.taskService.updateTask(task.id, {
-                title: newTitle,
-                categoryId: selectedCategoryId,
-              });
-              this.showToast('Tarea actualizada');
-              this.cdr.markForCheck();
-            }
-          },
-        },
-      ],
+    this.taskService.updateTask(this.editingTask.id, {
+      title,
+      description: this.editDescription.trim(),
+      categoryId: this.editCategoryId,
+      priority: this.editPriority,
     });
-    await alert.present();
+    this.editingTask = null;
+    this.showToast('Tarea actualizada');
+    this.cdr.markForCheck();
   }
 
-  private async showPriorityPicker(task: Task, newTitle: string, categoryId: string): Promise<void> {
-    const priorities: { label: string; value: Priority }[] = [
-      { label: 'Alta', value: 'alta' },
-      { label: 'Media', value: 'media' },
-      { label: 'Baja', value: 'baja' },
-    ];
-
-    const alert = await this.alertCtrl.create({
-      header: 'Seleccionar prioridad',
-      inputs: priorities.map(p => ({
-        name: 'priority',
-        type: 'radio' as const,
-        label: p.label,
-        value: p.value,
-        checked: p.value === (task.priority || 'media'),
-      })),
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Guardar',
-          handler: (selectedPriority: Priority) => {
-            this.taskService.updateTask(task.id, {
-              title: newTitle,
-              categoryId,
-              priority: selectedPriority,
-            });
-            this.showToast('Tarea actualizada');
-            this.cdr.markForCheck();
-          },
-        },
-      ],
-    });
-    await alert.present();
+  cancelEdit(): void {
+    this.editingTask = null;
+    this.cdr.markForCheck();
   }
 
-  // ── Filtering ───────────────────────────────────────────────────────
+  // -- Filtering --
 
   filterBy(categoryId: string): void {
     this.selectedCategory = categoryId;
     this.filterTasks();
-    // Disable reorder when changing filter to avoid confusion
     this.reorderMode = false;
     this.cdr.markForCheck();
   }
@@ -250,7 +181,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  // ── Reorder ─────────────────────────────────────────────────────────
+  // -- Reorder --
 
   toggleReorder(): void {
     this.reorderMode = !this.reorderMode;
@@ -260,20 +191,17 @@ export class HomePage implements OnInit, OnDestroy {
     const detail = event.detail as { from: number; to: number; complete: (data?: any[]) => any[] };
 
     if (this.selectedCategory === 'all') {
-      // Simple case: reorder the full list
       const items = [...this.tasks];
       const movedItem = items.splice(detail.from, 1)[0];
       items.splice(detail.to, 0, movedItem);
       detail.complete();
       this.taskService.saveTasks(items);
     } else {
-      // Filtered case: reorder within the category
       const filtered = [...this.filteredTasks];
       const movedItem = filtered.splice(detail.from, 1)[0];
       filtered.splice(detail.to, 0, movedItem);
       detail.complete();
 
-      // Get original indices of filtered tasks in the full array
       const allTasks = [...this.tasks];
       const indices: number[] = [];
       allTasks.forEach((t, i) => {
@@ -282,7 +210,6 @@ export class HomePage implements OnInit, OnDestroy {
         }
       });
 
-      // Place reordered items back at their original slots
       indices.forEach((originalIndex, newPosition) => {
         allTasks[originalIndex] = filtered[newPosition];
       });
@@ -291,7 +218,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────────
+  // -- Helpers --
 
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;

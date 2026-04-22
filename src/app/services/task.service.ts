@@ -30,11 +30,12 @@ export class TaskService {
   // ── Task Operations ─────────────────────────────────────────────────
 
   /** Add a new task */
-  addTask(title: string, categoryId: string, priority: Priority): void {
+  addTask(title: string, categoryId: string, priority: Priority, description?: string): void {
     const tasks = this.tasksSubject.getValue();
     const newTask: Task = {
       id: this.generateId(),
       title: title.trim(),
+      description: description?.trim(),
       categoryId,
       completed: false,
       priority,
@@ -62,7 +63,7 @@ export class TaskService {
   }
 
   /** Update an existing task */
-  updateTask(taskId: string, updates: Partial<Pick<Task, 'title' | 'categoryId' | 'priority'>>): void {
+  updateTask(taskId: string, updates: Partial<Pick<Task, 'title' | 'description' | 'categoryId' | 'priority'>>): void {
     const tasks = this.tasksSubject.getValue().map(t =>
       t.id === taskId ? { ...t, ...updates } : t
     );

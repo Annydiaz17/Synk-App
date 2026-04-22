@@ -2,7 +2,7 @@
 // Home Page -- Synk App
 // ==========================================================================
 
-// ── Header Gradient ───────────────────────────────────────────────────
+// -- Header Gradient --
 .header-gradient {
   background: var(--synk-gradient-soft);
   padding-bottom: 16px;
@@ -14,32 +14,16 @@
   }
 }
 
-.logo-brand {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px 0 8px;
-  animation: fadeInUp 0.4s ease both;
-
-  .header-logo {
-    height: 56px;
-    width: auto;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.95;
-  }
-}
-
-.app-flash-icon {
-  font-size: 18px;
-  margin-left: 4px;
-  vertical-align: middle;
-}
-
 .app-title {
   font-weight: 800;
   font-size: 22px;
   letter-spacing: -0.5px;
+}
+
+.brand-btn {
+  ion-icon {
+    filter: drop-shadow(0 0 6px rgba(0, 212, 200, 0.5));
+  }
 }
 
 .active-btn {
@@ -58,7 +42,7 @@
   }
 }
 
-// ── Stats Bar ─────────────────────────────────────────────────────────
+// -- Stats Bar --
 .stats-bar {
   display: flex;
   align-items: center;
@@ -126,7 +110,7 @@
   }
 }
 
-// ── Category Filter ───────────────────────────────────────────────────
+// -- Category Filter --
 .category-filter {
   display: flex;
   overflow-x: auto;
@@ -155,7 +139,7 @@
   }
 }
 
-// ── Add Task Section ──────────────────────────────────────────────────
+// -- Add Task Section --
 .add-task-section {
   margin: 8px 16px 12px;
   background: var(--ion-card-background);
@@ -193,7 +177,7 @@
     padding: 0 20px;
 
     &.visible {
-      max-height: 300px;
+      max-height: 400px;
       opacity: 1;
       padding: 0 20px 20px;
     }
@@ -214,6 +198,13 @@
     &:focus-within {
       border-color: var(--ion-color-primary);
     }
+  }
+
+  .task-textarea {
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    min-height: 52px;
+    margin-bottom: 14px;
   }
 
   .form-selects {
@@ -241,7 +232,7 @@
   }
 }
 
-// ── Reorder Indicator ─────────────────────────────────────────────────
+// -- Reorder Indicator --
 .reorder-indicator {
   display: flex;
   align-items: center;
@@ -268,7 +259,7 @@
   }
 }
 
-// -- Task Items ---------------------------------------------------------------
+// -- Task Items --
 .task-item {
   --background: var(--ion-card-background);
   --min-height: 68px;
@@ -316,6 +307,18 @@
       transition: all 0.3s ease;
     }
 
+    .task-desc {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      margin-top: 0;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
     .task-meta {
       display: flex;
       align-items: center;
@@ -325,7 +328,7 @@
   }
 }
 
-// ── Category Badge ────────────────────────────────────────────────────
+// -- Category Badge --
 .category-badge {
   display: inline-flex;
   align-items: center;
@@ -337,7 +340,7 @@
   letter-spacing: 0.3px;
 }
 
-// -- Priority Badge (ion-badge) -------------------------------------------
+// -- Priority Badge (ion-badge) --
 .priority-badge {
   display: inline-flex;
   align-items: center;
@@ -357,10 +360,9 @@
   }
 }
 
-
-
-// ── Slide Delete ──────────────────────────────────────────────────────
-ion-item-option[color="danger"] {
+// -- Slide Options --
+ion-item-option[color="danger"],
+ion-item-option[color="primary"] {
   --border-radius: 12px;
   margin: 6px 4px;
 
@@ -369,7 +371,7 @@ ion-item-option[color="danger"] {
   }
 }
 
-// ── Empty State ───────────────────────────────────────────────────────
+// -- Empty State --
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -408,5 +410,320 @@ ion-item-option[color="danger"] {
     font-size: 14px;
     color: var(--ion-color-medium);
     max-width: 240px;
+  }
+}
+
+// ==========================================================================
+// EDIT TASK MODAL
+// ==========================================================================
+
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.25s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.edit-modal {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(180deg, #F3F4FF 0%, #ffffff 40%);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.edit-modal-header {
+  background: linear-gradient(135deg, #00D4C8, #6366F1);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+}
+
+.edit-modal-body {
+  padding: 24px;
+}
+
+.edit-field {
+  margin-bottom: 22px;
+}
+
+.edit-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #6366F1;
+  margin-bottom: 8px;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  border: 2px solid #E2E8F0;
+  border-radius: 14px;
+  background: #fff;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: #00D4C8;
+    box-shadow: 0 0 0 4px rgba(0, 212, 200, 0.15);
+  }
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+// -- Category Chips in Modal --
+.edit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 2px solid #E2E8F0;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+
+  .edit-chip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: #CBD5E1;
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    border-color: var(--chip-color, #00D4C8);
+    background: var(--chip-color, #00D4C8);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .edit-chip-dot {
+      background: #fff !important;
+    }
+  }
+}
+
+// -- Priority Buttons in Modal --
+.priority-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.priority-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: 16px;
+  border: 2px solid #E2E8F0;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &.priority-alta {
+    color: #EF4444;
+    ion-icon { color: #EF4444; }
+
+    &.active {
+      background: #EF4444;
+      border-color: #EF4444;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+      ion-icon { color: #fff; }
+    }
+  }
+
+  &.priority-media {
+    color: #FACC15;
+    ion-icon { color: #FACC15; }
+
+    &.active {
+      background: #EAB308;
+      border-color: #EAB308;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(250, 204, 21, 0.35);
+      ion-icon { color: #fff; }
+    }
+  }
+
+  &.priority-baja {
+    color: #22C55E;
+    ion-icon { color: #22C55E; }
+
+    &.active {
+      background: #22C55E;
+      border-color: #22C55E;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.35);
+      ion-icon { color: #fff; }
+    }
+  }
+}
+
+// -- Modal Action Buttons --
+.edit-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 28px;
+}
+
+.edit-btn-cancel {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: none;
+  background: #F1F5F9;
+  color: #64748B;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #E2E8F0;
+  }
+}
+
+.edit-btn-save {
+  flex: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #00D4C8, #6366F1);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+
+  ion-icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+  }
+}
+
+// -- Dark mode for modal --
+@media (prefers-color-scheme: dark) {
+  .edit-modal {
+    background: linear-gradient(180deg, #1E293B 0%, #0F172A 40%);
+  }
+
+  .edit-input {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F1F5F9;
+
+    &:focus {
+      border-color: #00D4C8;
+    }
+  }
+
+  .edit-chip {
+    background: #1E293B;
+    border-color: #334155;
+    color: #CBD5E1;
+  }
+
+  .priority-btn {
+    background: #1E293B;
+    border-color: #334155;
+  }
+
+  .edit-btn-cancel {
+    background: #334155;
+    color: #CBD5E1;
   }
 }

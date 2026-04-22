@@ -5,6 +5,7 @@ export type Priority = 'alta' | 'media' | 'baja';
 export interface Task {
   id: string;
   title: string;
+  description?: string;
   categoryId: string;
   completed: boolean;
   priority: Priority;
